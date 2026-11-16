@@ -1,0 +1,17 @@
+{
+  "name": "vatsal-vadgama-portfolio",
+  "version": "1.0.0",
+  "description": "Personal engineering portfolio of Vatsal Vadgama",
+  "scripts": {
+    "start": "npx serve .",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "portfolio",
+    "software-engineer",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Vatsal Vadgama <vatsalvadgama04@gmail.com>",
+  "license": "MIT"
+}
