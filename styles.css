@@ -626,7 +626,7 @@ main {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding-top: 450px;
+  padding-top: 428px;
   text-align: center;
 }
 
@@ -2402,7 +2402,7 @@ main {
   }
 
   .hero-copy {
-    padding-top: 410px;
+    padding-top: 350px;
   }
 
   .hero h1.hero-title {
@@ -2499,7 +2499,7 @@ main {
   }
 
   .hero-copy {
-    padding-top: clamp(360px, 50vh, 440px);
+    padding-top: clamp(270px, 37vh, 330px);
   }
 
   .hero-decoration {
