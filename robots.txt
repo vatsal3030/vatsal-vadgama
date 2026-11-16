@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vatsal-vadgama.vercel.app/sitemap.xml

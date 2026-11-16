@@ -1,0 +1,16 @@
+{
+  "name": "Vatsal Vadgama — Software Engineer Portfolio",
+  "short_name": "Vatsal Vadgama",
+  "description": "Personal engineering portfolio of Vatsal Vadgama, a computer science undergraduate building full-stack products, backend systems, and applied machine learning.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0c0b",
+  "theme_color": "#111310",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
