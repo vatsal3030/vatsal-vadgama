@@ -458,7 +458,6 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  isolation: isolate;
 }
 
 .hero-topline {
@@ -487,7 +486,6 @@ main {
   align-items: center;
   justify-content: flex-start;
   min-height: 690px;
-  isolation: isolate;
   width: 100%;
 }
 
@@ -741,7 +739,9 @@ main {
   display: grid;
   grid-template-columns: 1.3fr repeat(4, 1fr);
   border-block: 1px solid rgba(255, 255, 255, 0.06);
-  background: transparent;
+  background: var(--bg);
+  position: relative;
+  z-index: 10;
   padding: 28px max(56px, calc((100% - 1320px) / 2));
   gap: 20px;
   align-items: center;
@@ -777,7 +777,9 @@ main {
    9. Selected Work & Stacking Cards Section
    -------------------------------------------------------------------------- */
 .work-section {
-  background: transparent;
+  background: var(--bg);
+  position: relative;
+  z-index: 10;
 }
 
 .work-intro {

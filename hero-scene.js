@@ -17,7 +17,6 @@
   const portrait = document.querySelector(".hero-fallback");
   const sceneEl = document.querySelector(".hero-scene");
   const heroEl = document.querySelector(".hero");
-  const decoEl = document.querySelector(".hero-decoration");
 
   if (!canvas || !portrait || !sceneEl || !heroEl) return;
 
@@ -246,35 +245,10 @@
       portrait.style.objectPosition = "center center";
       portrait.style.zIndex = "1";
     }
-
-    // Anchor hero-decoration sticky in background when motion is active
-    if (decoEl) {
-      if (isMotionActive()) {
-        const prevPos = decoEl.style.position;
-        const prevTop = decoEl.style.top;
-        decoEl.style.position = "absolute";
-        decoEl.style.top = "";
-        const naturalTop = Math.round(decoEl.getBoundingClientRect().top + window.scrollY);
-        decoEl.style.position = "fixed";
-        decoEl.style.top = `${naturalTop}px`;
-        decoEl.style.left = "50%";
-        decoEl.style.transform = "translateX(-50%)";
-        decoEl.style.pointerEvents = "none";
-      } else {
-        decoEl.style.position = "absolute";
-        decoEl.style.top = "";
-        decoEl.style.left = "50%";
-        decoEl.style.transform = "translateX(-50%)";
-        decoEl.style.opacity = "1";
-        decoEl.style.visibility = "visible";
-        decoEl.style.pointerEvents = "auto";
-      }
-    }
   }
 
   function getScrollProgress() {
-    const heroHeight = heroEl.offsetHeight || 700;
-    return Math.min(1, Math.max(0, window.scrollY / (heroHeight * 0.82)));
+    return Math.min(1, Math.max(0, window.scrollY / 580));
   }
 
   function renderFrame() {
@@ -316,14 +290,6 @@
       portrait.style.opacity = photoOpacity.toFixed(3);
     }
 
-    // Sticky background dispersion fadeout:
-    // Gradually fade out into the dark background as user scrolls down
-    if (decoEl && isMotionActive()) {
-      const decoOpacity = THREE.MathUtils.clamp(1 - (p - 0.55) / 0.40, 0, 1);
-      decoEl.style.opacity = decoOpacity.toFixed(3);
-      decoEl.style.visibility = decoOpacity <= 0 ? "hidden" : "visible";
-    }
-
     // Interactive pointer parallax
     if (finePointer.matches && pointer.active) {
       points.rotation.y = THREE.MathUtils.damp(points.rotation.y, pointer.x * 0.024, 3.2, delta);
@@ -359,14 +325,12 @@
       if (canvas) canvas.style.display = "block";
       portrait.classList.add("is-covered");
       portrait.style.opacity = "0";
-      updateScale();
       startAnimation();
     } else {
       stopAnimation();
       if (canvas) canvas.style.display = "none";
       portrait.classList.remove("is-covered");
       portrait.style.opacity = "1";
-      updateScale();
     }
   }
 

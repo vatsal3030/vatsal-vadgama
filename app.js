@@ -321,11 +321,8 @@ if (window.Lenis && window.gsap && window.ScrollTrigger) {
         .from(
           ".hero-decoration",
           {
-            y: 20,
-            scale: 0.95,
             autoAlpha: 0,
-            duration: 0.85,
-            clearProps: "transform"
+            duration: 0.85
           },
           "-=0.3"
         )
@@ -386,6 +383,27 @@ if (window.Lenis && window.gsap && window.ScrollTrigger) {
           },
           "-=0.3"
         );
+
+      // Pinned Sticky Hero Background: Keep photo and particle animation anchored in viewport
+      ScrollTrigger.create({
+        trigger: ".hero",
+        start: "top top",
+        end: "+=650",
+        pin: ".hero-decoration",
+        pinSpacing: false
+      });
+
+      // Gradually fade out .hero-decoration as scroll progresses towards 650px
+      gsap.to(".hero-decoration", {
+        autoAlpha: 0,
+        ease: "power1.in",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "+=650",
+          scrub: true
+        }
+      });
 
       // Subtle fade & scale on hero copy during scroll
       gsap.to(".hero-copy", {
