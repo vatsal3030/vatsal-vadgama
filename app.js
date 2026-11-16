@@ -385,10 +385,10 @@ if (window.Lenis && window.gsap && window.ScrollTrigger) {
         );
 
       // Pinned Sticky Hero Background: Keep photo and particle animation anchored in viewport
-      // until the incoming opaque sections (.signal-strip & .work-section) slide up and cover it
+      // Lock position immediately from scrollY = 0 (top of hero starts at 92px due to main padding)
       ScrollTrigger.create({
         trigger: ".hero",
-        start: "top top",
+        start: "top 92px",
         end: "bottom top",
         pin: ".hero-decoration",
         pinSpacing: false

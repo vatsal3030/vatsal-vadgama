@@ -138,23 +138,35 @@
 
           void main() {
             float p = smoothstep(0.04, 0.85, uProgress);
-            // Smooth continuous wavy dispersion matching reference site
-            vec3 target = vec3(
-              (aSeed - 0.5) * 3.4,
-              sin(aSeed * 22.0 + position.x * 6.28) * 0.12 + (position.y - 0.1) * 0.45,
-              sin(aSeed * 14.0) * 0.14
+            
+            // Organic radial wave dispersion expanding outward from face silhouette
+            vec3 dir = vec3(position.x * 2.8, position.y * 0.9, sin(aSeed * 6.28) * 0.25);
+            vec3 wave = vec3(
+              sin(aSeed * 25.13 + position.y * 10.0) * 0.35,
+              sin(aSeed * 18.84 + position.x * 8.0) * 0.12,
+              cos(aSeed * 14.0) * 0.15
             );
+            vec3 target = position + dir * 1.5 + wave;
             vec3 pos = mix(position, target, p);
+            
             float edge = smoothstep(0.18, 0.5, abs(position.x));
             pos.x += sin(uTime * 0.35 + aSeed * 40.0) * 0.008 * (edge + p);
             pos.z += sin(aSeed * 64.0 + uTime * 0.25) * 0.015;
+            
             vec4 mv = modelViewMatrix * vec4(pos * uScale, 1.0);
             gl_Position = projectionMatrix * mv;
-            gl_PointSize = (1.5 + dot(aColor, vec3(0.299, 0.587, 0.114)) * 1.3) * uDpr;
+            gl_PointSize = (1.6 + dot(aColor, vec3(0.299, 0.587, 0.114)) * 1.3) * uDpr;
+            
             // Warm amber spark hue on dispersion
             vColor = mix(aColor, vec3(1.0, 0.46, 0.20), p * 0.6);
-            // Full head and collar remain intact without harsh boundary clipping
-            vAlpha = uDotsAlpha * (1.0 - p * 0.42);
+            
+            // Soft radial falloff towards perimeter so particles never create a box boundary
+            float dist = length(vec2(pos.x * 0.5, pos.y));
+            float outerFade = smoothstep(1.9, 0.7, dist);
+            // Soft bottom feather so collar blends linearly into the dark background
+            float bottomFeather = smoothstep(-0.52, -0.38, position.y);
+            
+            vAlpha = uDotsAlpha * mix(bottomFeather, outerFade * bottomFeather * 0.75, p * 0.8) * (1.0 - p * 0.35);
           }
         `;
 
@@ -222,8 +234,8 @@
     const targetPixelHeight = Math.min(540, height * 0.78);
     material.uniforms.uScale.value = visibleFrustumHeight * (targetPixelHeight / height);
 
-    // Position head comfortably above center so entire face, neck and collar are unblocked:
-    const headOffsetYFactor = 0.115;
+    // Position head with generous clearance below navbar:
+    const headOffsetYFactor = 0.02;
     if (points) {
       points.position.y = visibleFrustumHeight * headOffsetYFactor;
     }
@@ -284,11 +296,16 @@
     // - Base photo stays softly visible underneath (~0.35) so it NEVER drops to a blank void!
     // - Particles disperse wide in wavy bands across p = 0.20 to 0.90
     // - Incoming opaque section (.signal-strip) slides up like a curtain and covers the hero
-    const dotsAlpha = THREE.MathUtils.clamp((p - 0.01) / 0.18, 0, 1);
+    // Smooth linear handoff:
+    // At scroll = 0: photo is crisp & 100% visible (dotsAlpha = 0)
+    // On scroll: dots emerge over photo between p = 0.01 and 0.16
+    // Photo smoothly dissolves between p = 0.04 and 0.42 into the WebGL particle system
+    // WebGL particles then disperse outward with soft feathered edges
+    const dotsAlpha = THREE.MathUtils.clamp((p - 0.01) / 0.16, 0, 1);
     material.uniforms.uDotsAlpha.value = dotsAlpha;
 
     if (portrait) {
-      const photoOpacity = 1 - THREE.MathUtils.clamp((p - 0.08) / 0.65, 0, 0.65);
+      const photoOpacity = 1 - THREE.MathUtils.clamp((p - 0.04) / 0.38, 0, 1);
       portrait.style.opacity = photoOpacity.toFixed(3);
     }
 

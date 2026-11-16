@@ -510,7 +510,7 @@ main {
 .hero-decoration {
   position: absolute;
   z-index: 1;
-  top: 0;
+  top: 48px;
   left: 50%;
   width: min(500px, 48vw);
   height: 570px;
@@ -559,6 +559,8 @@ main {
   opacity: 1;
   filter: contrast(1.05) brightness(0.98);
   transition: opacity 0.25s ease-out;
+  -webkit-mask-image: radial-gradient(ellipse 85% 82% at 50% 45%, #000 45%, transparent 95%);
+  mask-image: radial-gradient(ellipse 85% 82% at 50% 45%, #000 45%, transparent 95%);
 }
 
 .hero-fallback.is-covered {
@@ -618,7 +620,7 @@ main {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding-top: 368px;
+  padding-top: 418px;
   text-align: center;
 }
 
