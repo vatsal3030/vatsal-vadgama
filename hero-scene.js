@@ -109,11 +109,12 @@
             // Discard transparent background and dark pixels - points on body/face only
             if (alpha < 0.25 || lum < 0.04) continue;
 
+            // Organic sub-pixel jitter to prevent rigid Cartesian grid dithering
+            const jx = (Math.random() - 0.5) * (0.8 / gridW) * 0.95;
+            const jy = (Math.random() - 0.5) * (1.0 / gridH) * 0.95;
+
             // Coordinates in normalized Three.js space
-            // x centered from -0.4 to +0.4
-            // y centered from -0.5 to +0.5
-            // z subtle relief according to luminance
-            positions.push((x / gridW - 0.5) * 0.8, 0.5 - y / gridH, 0.025 * lum);
+            positions.push((x / gridW - 0.5) * 0.8 + jx, 0.5 - y / gridH + jy, 0.025 * lum);
             colors.push(r / 255, g / 255, b / 255);
             seeds.push(((127 * x + 311 * y) % 997) / 997);
           }
@@ -136,12 +137,12 @@
           varying float vAlpha;
 
           void main() {
-            float p = smoothstep(0.04, 0.82, uProgress);
-            // Non-linear horizontal dispersion and wavy bands matching the reference
+            float p = smoothstep(0.04, 0.85, uProgress);
+            // Smooth continuous wavy dispersion matching reference site
             vec3 target = vec3(
-              (aSeed - 0.5) * 2.8,
-              sin(aSeed * 25.1327) * 0.065 + (floor(position.x * 4.0 + 2.0) - 2.0) * 0.22,
-              sin(aSeed * 18.0) * 0.12
+              (aSeed - 0.5) * 3.4,
+              sin(aSeed * 22.0 + position.x * 6.28) * 0.12 + (position.y - 0.1) * 0.45,
+              sin(aSeed * 14.0) * 0.14
             );
             vec3 pos = mix(position, target, p);
             float edge = smoothstep(0.18, 0.5, abs(position.x));
@@ -149,11 +150,11 @@
             pos.z += sin(aSeed * 64.0 + uTime * 0.25) * 0.015;
             vec4 mv = modelViewMatrix * vec4(pos * uScale, 1.0);
             gl_Position = projectionMatrix * mv;
-            gl_PointSize = (1.2 + dot(aColor, vec3(0.299, 0.587, 0.114)) * 0.95) * uDpr;
+            gl_PointSize = (1.5 + dot(aColor, vec3(0.299, 0.587, 0.114)) * 1.3) * uDpr;
             // Warm amber spark hue on dispersion
-            vColor = mix(aColor, vec3(1.0, 0.44, 0.18), p * 0.55);
-            // Dots opacity governed by uDotsAlpha and dispersion
-            vAlpha = uDotsAlpha * (1.0 - p * 0.38) * smoothstep(0.5, 0.35, abs(position.y));
+            vColor = mix(aColor, vec3(1.0, 0.46, 0.20), p * 0.6);
+            // Full head and collar remain intact without harsh boundary clipping
+            vAlpha = uDotsAlpha * (1.0 - p * 0.42);
           }
         `;
 
@@ -248,7 +249,7 @@
   }
 
   function getScrollProgress() {
-    return Math.min(1, Math.max(0, window.scrollY / 580));
+    return Math.min(1, Math.max(0, window.scrollY / 700));
   }
 
   function renderFrame() {
@@ -279,14 +280,15 @@
     // - Dots are invisible (uDotsAlpha = 0)
     // - Clean real portrait photo is 100% visible (opacity = 1)
     // On scroll:
-    // - Dots emerge smoothly between p = 0.01 and 0.20
-    // - Base photo dissolves smoothly between p = 0.08 and 0.40
-    // - Particles then disperse and fade away across p = 0.25 to 0.85
+    // - Dots emerge smoothly between p = 0.01 and 0.18
+    // - Base photo stays softly visible underneath (~0.35) so it NEVER drops to a blank void!
+    // - Particles disperse wide in wavy bands across p = 0.20 to 0.90
+    // - Incoming opaque section (.signal-strip) slides up like a curtain and covers the hero
     const dotsAlpha = THREE.MathUtils.clamp((p - 0.01) / 0.18, 0, 1);
     material.uniforms.uDotsAlpha.value = dotsAlpha;
 
     if (portrait) {
-      const photoOpacity = 1 - THREE.MathUtils.clamp((p - 0.08) / 0.32, 0, 1);
+      const photoOpacity = 1 - THREE.MathUtils.clamp((p - 0.08) / 0.65, 0, 0.65);
       portrait.style.opacity = photoOpacity.toFixed(3);
     }
 
