@@ -507,12 +507,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger) {
     // 4D. Animated Metric Counters
     // ------------------------------------------------------------------------
     const counterElements = [
-      { selector: ".metric-card:nth-child(2) strong", target: 8.34, decimals: 2, suffix: "<span>/10</span>" },
-      { selector: ".metric-card:nth-child(3) strong", target: 0.89, decimals: 2, suffix: "<span> R²</span>" },
-      { selector: ".metric-card:nth-child(4) strong", target: 1645, decimals: 0, suffix: "" }
+      { selector: '.metric-card[data-metric="deployments"] strong', target: 20, decimals: 0, prefix: "", suffix: "<span>+</span>" },
+      { selector: '.metric-card[data-metric="academic"] strong', target: 8.34, decimals: 2, prefix: "", suffix: "<span>/10</span>" },
+      { selector: '.metric-card[data-metric="biometrics"] strong', target: 300, decimals: 0, prefix: "&lt;", suffix: "<span>ms</span>" },
+      { selector: '.metric-card[data-metric="problem-solving"] strong', target: 1645, decimals: 0, prefix: "", suffix: "" }
     ];
 
-    counterElements.forEach(({ selector, target, decimals, suffix }) => {
+    counterElements.forEach(({ selector, target, decimals, prefix = "", suffix = "" }) => {
       const el = document.querySelector(selector);
       if (!el) return;
 
@@ -528,9 +529,9 @@ if (window.Lenis && window.gsap && window.ScrollTrigger) {
             ease: "power2.out",
             onUpdate: () => {
               if (decimals === 0) {
-                el.innerHTML = Math.round(obj.val).toLocaleString("en-US") + suffix;
+                el.innerHTML = prefix + Math.round(obj.val).toLocaleString("en-US") + suffix;
               } else {
-                el.innerHTML = obj.val.toFixed(decimals) + suffix;
+                el.innerHTML = prefix + obj.val.toFixed(decimals) + suffix;
               }
             }
           });
